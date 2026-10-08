@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>MEDI Q – Clinical Evidence & Triage Support</title>
+<style>
+:root{--bg:#eef5f7;--card:#fff;--tx:#10222e;--mu:#5a6f7d;--bd:#d5e3e8;--ac:#0e8a96;--ac2:#4f46e5;--hot:#f0624d;--tint:#e3f4f6;--pos:#c2410c;--neg:#15803d;--unc:#b7791f;--ood:#475569;--sh:0 2px 10px rgba(16,34,46,.07)}
+@media (prefers-color-scheme:dark){:root{--bg:#0a1620;--card:#12232f;--tx:#e8f2f5;--mu:#93a9b5;--bd:#23394a;--ac:#2dd4bf;--ac2:#818cf8;--hot:#ff8a73;--tint:#0f3340;--pos:#fb923c;--neg:#4ade80;--unc:#fbbf24;--ood:#94a3b8;--sh:0 2px 12px rgba(0,0,0,.35)}}
+*{box-sizing:border-box}html{scroll-padding-top:70px}
+body{margin:0;padding-bottom:env(safe-area-inset-bottom,0px);background:var(--bg);color:var(--tx);font:16px/1.6 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+header{position:sticky;top:0;z-index:5;padding:10px 16px;padding-top:calc(10px + env(safe-area-inset-top,0px));background:linear-gradient(90deg,var(--ac),var(--ac2));display:flex;gap:8px;align-items:center;flex-wrap:wrap;box-shadow:var(--sh)}
+.logo{font-weight:800;font-size:22px;color:#fff;margin-right:auto}
+nav{display:flex;gap:6px;flex-wrap:wrap}
+nav button{border:0;background:rgba(255,255,255,.16);color:#fff;padding:9px 16px;border-radius:99px;cursor:pointer;font:inherit;font-weight:600}
+nav button.on{background:#fff;color:var(--ac2)}
+#srv{font-size:12px;color:#fff;background:rgba(0,0,0,.25);padding:3px 10px;border-radius:99px}
+.btn{border:1.5px solid var(--ac);background:var(--card);color:var(--ac);padding:10px 18px;border-radius:10px;cursor:pointer;font:inherit;font-weight:600;min-height:44px;display:inline-flex;align-items:center}
+.btn:hover{background:var(--tint)}.btn.pri{background:var(--hot);color:#fff;border-color:var(--hot)}.btn:disabled{opacity:.5;cursor:wait}
+:focus-visible{outline:3px solid var(--ac2);outline-offset:2px}
+main{max-width:1000px;margin:0 auto;padding:20px 16px 60px}
+.page{display:none}.page.on{display:block}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:18px;margin-bottom:14px;box-shadow:var(--sh)}
+.hero{background:linear-gradient(135deg,var(--ac),var(--ac2));color:#fff;border:0}.hero .mu{color:rgba(255,255,255,.9)}
+.hero .btn{border-color:#fff}.hero .btn:not(.pri){background:rgba(255,255,255,.15);color:#fff}
+.grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
+h1{font-size:34px;margin:6px 0}h2{font-size:19px;margin:0 0 10px;color:var(--ac)}.mu{color:var(--mu)}.note{font-size:13px;color:var(--mu)}
+.stat{border-top:5px solid var(--c,var(--ac))}.stat b{display:block;font-size:30px;color:var(--c,var(--ac))}
+.drop{border:2.5px dashed var(--ac);background:var(--tint);border-radius:14px;padding:32px 20px;text-align:center;cursor:pointer}.drop.hv{border-color:var(--hot)}
+.tip{background:var(--tint);border-left:5px solid var(--ac2);padding:10px 14px;border-radius:8px;margin-bottom:14px}
+img.xr,canvas{max-width:100%;border-radius:10px;border:2px solid var(--bd);background:#000}
+.badge{display:inline-block;padding:5px 16px;border-radius:99px;color:#fff;font-weight:700;font-size:17px}
+.bar{height:14px;background:var(--tint);border-radius:7px;overflow:hidden;margin:4px 0 12px}.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--ac),var(--ac2));transition:width .8s}
+table{border-collapse:collapse;width:100%}td,th{padding:8px;border-bottom:1px solid var(--bd);text-align:left}th{color:var(--ac2);font-size:13px;text-transform:uppercase}
+.row{display:flex;gap:10px;flex-wrap:wrap;margin:10px 0;align-items:flex-start}
+label{display:block;font-size:13px;color:var(--mu);font-weight:600}
+input,select{display:block;width:100%;margin-top:3px;padding:9px 10px;border:1.5px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--tx);font:inherit}
+.chip{display:inline-flex!important;align-items:center;gap:6px;border:1.5px solid var(--bd);border-radius:99px;padding:6px 14px;cursor:pointer;color:var(--tx)}.chip input{width:auto;margin:0}
+.chip:has(input:checked){background:var(--tint);border-color:var(--ac)}
+.red{background:#dc3545;color:#fff;padding:10px 14px;border-radius:10px;font-weight:700;margin-bottom:10px}
+.err{border-left:6px solid #dc3545}
+.cm{display:grid;grid-template-columns:repeat(2,1fr);gap:6px;max-width:260px}.cm div{padding:18px;text-align:center;border-radius:10px;color:#fff;font-weight:700}
+@media (max-width:520px){h1{font-size:28px}.logo{width:100%}}
+@media print{header,.noprint,#home,#validate,#live .card:first-child{display:none!important}body{background:#fff;color:#000}.card{box-shadow:none;break-inside:avoid}}
+</style></head><body>
+<header><span class="logo">🩺 MEDI Q</span><span id="srv">checking server…</span>
+<nav id="nav"><button data-p="home" class="on">Home</button><button data-p="analyze">Analyze</button><button data-p="validate">Validation</button><button data-p="live">Live Demo</button></nav></header>
+<main>
+<section id="home" class="page on">
+<div class="card hero"><h1>🩺 MEDI Q</h1><p class="mu">Clinical Evidence &amp; Triage Support for chest X-ray analysis – DenseNet-121, Grad-CAM, quality + OOD gates, calibrated confidence and Monte-Carlo-dropout uncertainty.</p>
+<div class="row"><button class="btn pri" onclick="go('analyze')">Upload Medical Image</button><button class="btn" onclick="go('live')">Live Demo</button></div></div>
+<div class="grid" id="counters"></div>
+<div class="card" style="margin-top:14px"><h2>Recent analyses</h2><table id="recent"></table></div>
+<div class="card"><h2>🛡️ Clinical safeguards</h2><p>Every result is advisory · Quality and out-of-distribution gate runs before any finding · Uncertain cases escalate · Low SpO₂ can override a reassuring image · Case IDs only, no patient identifiers.</p></div>
+<p class="note">Educational decision-support demo using public or de-identified images only. Not a medical device and not for diagnosis or treatment.</p>
+</section>
+
+<section id="analyze" class="page">
+<div class="tip"><b>How it works:</b> add a chest X-ray → press Analyze → read the finding, heatmap and triage advice. De-identified images only.</div>
+<div class="card"><h2>🧑‍⚕️ Clinical intake <span class="note">(optional – SpO₂ and symptoms feed the safety rules)</span></h2>
+<div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(130px,1fr))">
+<label>Case ID<input id="pid" readonly></label><label>Age<input id="age" type="number" min="0" max="120"></label>
+<label>Sex<select id="sex"><option>Not stated</option><option>Female</option><option>Male</option></select></label>
+<label>SpO₂ %<input id="spo2" type="number" min="50" max="100" placeholder="e.g. 96"></label>
+<label>Temp °C<input id="temp" type="number" step=".1"></label><label>Heart rate<input id="hr" type="number" placeholder="bpm"></label></div>
+<div class="row"><b class="mu">Symptoms:</b>
+<label class="chip"><input type="checkbox" class="sy" value="Cough">Cough</label><label class="chip"><input type="checkbox" class="sy" value="Fever">Fever</label><label class="chip"><input type="checkbox" class="sy" value="Shortness of breath">Breathlessness</label><label class="chip"><input type="checkbox" class="sy" value="Chest pain">Chest pain</label><label class="chip"><input type="checkbox" class="sy" value="Fatigue">Fatigue</label></div>
+<details><summary class="mu" style="cursor:pointer">Analysis options</summary>
+<div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(150px,1fr));margin-top:10px">
+<label>Target finding<select id="target"><option value="auto">Auto (best of pneumonia / opacity / consolidation)</option><option>Pneumonia</option><option>Lung Opacity</option><option>Consolidation</option></select></label>
+<label>Confidence threshold<input id="thr" type="number" min="0.5" max="0.99" step="0.05" value="0.7"></label>
+<label>MC-dropout passes<input id="mc" type="number" min="2" max="100" value="20"></label></div>
+<div class="row"><label class="chip"><input type="checkbox" id="oHeat" checked>Heatmap</label><label class="chip"><input type="checkbox" id="oOod" checked>OOD check</label><label class="chip"><input type="checkbox" id="oQc" checked>Quality gate</label></div></details></div>
+<div class="card"><h2>📤 Upload Medical Image</h2>
+<div class="drop" id="drop"><span style="font-size:36px">🖼️</span><br><b>Drag &amp; drop an image here</b><br>or <u>click to browse</u></div>
+<input type="file" id="file" accept="image/*" hidden>
+<div id="prevbox" style="display:none"><img id="prev" class="xr" width="256" alt="Selected image preview"><div class="row"><button class="btn pri" id="go">Analyze Image</button></div></div></div>
+<div id="out1"></div>
+</section>
+
+<section id="validate" class="page">
+<div class="card"><h2>Validation dashboard</h2>
+<p class="mu">Upload a CSV with a header row <code>truth,pred</code> (0 = no finding, 1 = finding) from your held-out test set. Metrics are computed in your browser – nothing is invented.</p>
+<div class="row"><label class="btn pri">Choose results CSV<input type="file" id="csv" accept=".csv,text/csv" hidden></label></div></div>
+<div id="sv"></div>
+<div id="vd"></div>
+<div class="card"><h2>Session activity <span class="note">(this browser tab, no ground truth)</span></h2><div id="sess"></div></div>
+</section>
+
+<section id="live" class="page">
+<div class="card"><h2>🎯 Live testing – unseen / poor-quality samples</h2><p class="mu">Synthetic stress tests go through the real backend, so quality and OOD gates are genuinely exercised. For true positives, use real public X-rays (e.g. from a chest X-ray dataset).</p>
+<div class="row"><button class="btn" data-s="clear">Plain synthetic scan</button><button class="btn" data-s="blur">Blurry</button><button class="btn" data-s="dark">Too dark</button><button class="btn" data-s="bright">Overexposed</button><button class="btn" data-s="color">Non-medical (colour)</button>
+<label class="btn pri">Choose Image<input type="file" id="file2" accept="image/*" hidden></label></div></div>
+<div id="out2"></div>
+</section>
+</main>
+<script>
+const $=s=>document.querySelector(s),esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const API=location.protocol==='file:'?'http://localhost:8000':'';
+const st={pos:0,neg:0,unc:0,poor:0,esc:0,log:[]};
+const COL={positive:'var(--pos)',negative:'var(--neg)',uncertain:'var(--unc)',poor:'var(--ood)'};
+const LAB={positive:'🟠 Finding flagged',negative:'🟢 No finding',uncertain:'🟡 Uncertain',poor:'⚫ Poor quality / OOD'};
+function go(p){document.querySelectorAll('.page').forEach(e=>e.classList.toggle('on',e.id==p));document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.p==p));scrollTo(0,0);if(p=='validate')loadValidation()}
+$('#nav').onclick=e=>e.target.dataset.p&&go(e.target.dataset.p);
+function newId(){$('#pid').value='MQ-'+Math.floor(1000+Math.random()*9000)}
+function counters(){const t=st.pos+st.neg+st.unc+st.poor;
+$('#counters').innerHTML=[['📊 Total analyzed',t,'var(--ac)'],['🟠 Finding flagged',st.pos,'var(--pos)'],['🟢 No finding',st.neg,'var(--neg)'],['🟡 Uncertain',st.unc,'var(--unc)'],['⚫ Poor quality / OOD',st.poor,'var(--ood)'],['🚨 Escalated',st.esc,'var(--hot)']].map(([a,b,c])=>`<div class="card stat" style="--c:${c}"><span class="mu">${a}</span><b>${b}</b></div>`).join('');
+const rows='<tr><th>Image</th><th>Finding</th><th>Confidence</th><th>Triage</th></tr>'+(st.log.slice(0,8).map(r=>`<tr><td>${esc(r.n)}</td><td>${esc(r.f)}</td><td>${r.c}</td><td>${esc(r.t)}</td></tr>`).join('')||'<tr><td colspan=4 class="mu">No analyses yet – upload an image.</td></tr>');
+$('#recent').innerHTML=rows;$('#sess').innerHTML=`<table>${rows}</table>`}
+counters();newId();
+fetch(API+'/health').then(r=>r.json()).then(h=>{$('#srv').textContent='● model online · T='+h.temperature+' · OOD '+(h.ood_calibrated?'calibrated':'not calibrated')}).catch(()=>{$('#srv').textContent='○ backend offline'});
+
+let curFile=null;
+function pick(f){if(!f)return;curFile=f;$('#prev').src=URL.createObjectURL(f);$('#prevbox').style.display='block';$('#out1').innerHTML=''}
+const drop=$('#drop');drop.onclick=()=>$('#file').click();
+['dragover','dragenter'].forEach(v=>drop.addEventListener(v,e=>{e.preventDefault();drop.classList.add('hv')}));
+['dragleave','drop'].forEach(v=>drop.addEventListener(v,e=>{e.preventDefault();drop.classList.remove('hv')}));
+drop.addEventListener('drop',e=>pick(e.dataTransfer.files[0]));$('#file').onchange=e=>pick(e.target.files[0]);
+$('#go').onclick=async e=>{if(!curFile)return;e.target.disabled=true;await run(curFile,curFile.name,$('#out1'));e.target.disabled=false};
+$('#file2').onchange=e=>{const f=e.target.files[0];f&&run(f,f.name,$('#out2'))};
+
+function synth(k){const c=document.createElement('canvas');c.width=c.height=512;const x=c.getContext('2d');x.fillStyle='#777';x.fillRect(0,0,512,512);
+x.fillStyle='#2a2a2a';[[170,250],[342,250]].forEach(([a,b])=>{x.beginPath();x.ellipse(a,b,80,150,0,0,7);x.fill()});
+x.strokeStyle='#bbb';x.lineWidth=5;for(let y=120;y<400;y+=34){x.beginPath();x.moveTo(90,y);x.quadraticCurveTo(256,y+30,422,y);x.stroke()}
+const d=x.getImageData(0,0,512,512),p=d.data;for(let i=0;i<p.length;i+=4){const n=(Math.random()-.5)*34;p[i]+=n;p[i+1]+=n;p[i+2]+=n}x.putImageData(d,0,0);
+if(k=='blur'){const t=document.createElement('canvas');t.width=t.height=512;const y=t.getContext('2d');y.filter='blur(9px)';y.drawImage(c,0,0);return t}
+if(k=='dark'){x.fillStyle='rgba(0,0,0,.88)';x.fillRect(0,0,512,512)}
+if(k=='bright'){x.fillStyle='rgba(255,255,255,.8)';x.fillRect(0,0,512,512)}
+if(k=='color'){const g=x.createLinearGradient(0,0,512,512);g.addColorStop(0,'#e11d48');g.addColorStop(.5,'#22c55e');g.addColorStop(1,'#3b82f6');x.globalAlpha=.8;x.fillStyle=g;x.fillRect(0,0,512,512)}
+return c}
+document.querySelectorAll('[data-s]').forEach(b=>b.onclick=()=>synth(b.dataset.s).toBlob(bl=>run(new File([bl],'synthetic-'+b.dataset.s+'.png',{type:'image/png'}),'synthetic-'+b.dataset.s,$('#out2')),'image/png'));
+
+async function run(file,name,box){
+box.innerHTML='<div class="card"><b>Analyzing…</b> <span class="mu">quality → OOD → DenseNet-121 → MC dropout → Grad-CAM → triage</span></div>';
+const sy=[...document.querySelectorAll('.sy:checked')].map(e=>e.value);
+const spo2=+$('#spo2').value||0,fd=new FormData();
+fd.append('file',file);fd.append('case_id',$('#pid').value);fd.append('age',+$('#age').value||0);fd.append('temp',+$('#temp').value||0);fd.append('hr',+$('#hr').value||0);fd.append('spo2',spo2);fd.append('sy',sy.join(','));fd.append('target',$('#target').value);
+fd.append('thr',$('#thr').value||.7);fd.append('mc',$('#mc').value||20);fd.append('heatmap',$('#oHeat').checked);fd.append('ood',$('#oOod').checked);fd.append('qc',$('#oQc').checked);
+let r;try{const resp=await fetch(API+'/analyze',{method:'POST',body:fd});if(!resp.ok)throw new Error('Server returned '+resp.status);r=await resp.json()}
+catch(e){box.innerHTML=`<div class="card err"><h2>Backend not reachable</h2><p>${esc(e.message)}. Start it with <code>uvicorn app:app --port 8000</code> and open <b>http://localhost:8000</b>.</p></div>`;return}
+const s=r.status,col=COL[s],poor=s==='poor',esc2=r.triage.startsWith('Escalate'),redFlag=r.clinical.red_flag;
+st[s=='positive'?'pos':s=='negative'?'neg':s=='uncertain'?'unc':'poor']++;if(esc2)st.esc++;
+st.log.unshift({n:$('#pid').value+' · '+name.slice(0,14),f:r.finding,c:poor?'–':Math.round(r.confidence*100)+'%',t:r.triage.split(' –')[0]});counters();
+const q=r.quality,conf=r.confidence*100,unc=poor?100:Math.min(100,Math.round(r.mc_std*100*4));
+const todo=poor?['Retake the image (positioning, exposure, focus)','Re-run on the new image','Do not rely on this image']:s=='uncertain'?['Send to radiologist for review','Consider repeat or additional view','Correlate with exam and labs']:s=='positive'?['Clinician review of highlighted region','Correlate with symptoms, vitals and labs','Plan follow-up imaging']:['Routine follow-up','Re-image if symptoms persist','Give return precautions'];
+const sum=`MEDI Q ${$('#pid').value} | ${r.finding} | ${poor?'n/a':Math.round(conf)+'%'} | ${r.triage} | ${r.reason}`;
+box.innerHTML=`<div class="grid">
+<div class="card"><h2>📷 Image quality</h2><table><tr><td>Resolution</td><td>${q.width}×${q.height}</td></tr><tr><td>Blur (Laplacian var)</td><td>${q.blur.toFixed(0)}</td></tr><tr><td>Brightness / contrast</td><td>${q.brightness.toFixed(0)} / ${q.contrast.toFixed(0)}</td></tr><tr><td>Colour saturation</td><td>${q.saturation.toFixed(0)}</td></tr><tr><td>OOD distance</td><td>${r.ood_dist}</td></tr></table>
+<p><b>${poor?'Failed gate':'Acceptable'}</b>${poor?' – '+esc(r.reasons.join(', ')):''}</p></div>
+<div class="card"><h2>🔍 AI findings</h2><p><span class="badge" style="background:${col}">${LAB[s]}</span></p><p><b>${esc(r.finding)}</b>${poor?'':`<br><span class="mu">Target: ${esc(r.label)} · p = ${r.probability}</span>`}</p>
+<div class="mu">Confidence ${poor?'–':conf.toFixed(0)+'%'}</div><div class="bar"><i style="width:${poor?0:conf}%"></i></div>
+<div class="mu">Uncertainty (MC-dropout σ = ${r.mc_std})</div><div class="bar"><i style="width:${unc}%;background:var(--unc)"></i></div>
+<span class="note">Temperature T = ${r.temperature}${r.temperature==1?' (uncalibrated – run calibrate.py)':''}</span></div></div>
+<div class="card"><h2>🧠 Explainability</h2><div class="row"><div><div class="mu">Original</div><img class="xr" id="orig" width="256" alt="Original"></div>
+${r.heatmap?`<div><div class="mu">Grad-CAM overlay</div><img class="xr" width="256" alt="Grad-CAM heatmap" src="data:image/png;base64,${r.heatmap}"></div>`:''}</div>
+<p><b>Evidence:</b> ${esc(r.evidence)||'No reliable evidence – image failed quality gate.'}</p><p class="note">Heatmaps show where the model attended; they do not prove a finding.</p></div>
+<div class="card" style="border-left:6px solid ${esc2?'var(--hot)':col}"><h2>🚨 Triage support</h2>${redFlag?'<div class="red">⚠ RED FLAG – urgent clinician assessment recommended</div>':''}
+<p style="font-size:20px;margin:4px 0"><b>${esc2?'⚠ ':''}${esc(r.triage)}</b></p><p class="mu">Reason: ${esc(r.reason)}</p>
+<p class="mu">Clinical risk score: <b>${r.clinical.level}</b> (${r.clinical.score})</p><b>Suggested next steps</b><ul>${todo.map(t=>`<li>${t}</li>`).join('')}</ul>
+<div class="row noprint"><button class="btn pri" onclick="window.print()">🖨️ Print report</button><button class="btn" onclick="copySum(this)" data-t="${encodeURIComponent(sum)}">📋 Copy summary</button></div>
+<p class="note">Educational decision support only – final decisions rest with a qualified clinician.</p></div>`;
+$('#orig').src=URL.createObjectURL(file);newId()}
+async function copySum(b){const t=decodeURIComponent(b.dataset.t);try{await navigator.clipboard.writeText(t);b.textContent='✅ Copied'}catch(e){prompt('Copy summary:',t)}}
+
+$('#csv').onchange=async e=>{const f=e.target.files[0];if(!f)return;
+let TP=0,TN=0,FP=0,FN=0;(await f.text()).trim().split(/\r?\n/).slice(1).forEach(l=>{const[a,b]=l.split(',').map(v=>+v.trim());if(a===1&&b===1)TP++;else if(a===0&&b===0)TN++;else if(a===0&&b===1)FP++;else if(a===1&&b===0)FN++});
+const N=TP+TN+FP+FN;if(!N){$('#vd').innerHTML='<div class="card err">No valid rows found. Expected header <code>truth,pred</code> with 0/1 values.</div>';return}
+const d=(a,b)=>b?a/b:0,acc=d(TP+TN,N),pre=d(TP,TP+FP),rec=d(TP,TP+FN),spe=d(TN,TN+FP),f1=d(2*pre*rec,pre+rec),p=v=>(v*100).toFixed(1)+'%';
+$('#vd').innerHTML=`<div class="card"><h2>Results on ${N} images</h2><div class="grid">${[['Accuracy',acc],['Precision',pre],['Recall (sensitivity)',rec],['Specificity',spe],['F1 score',f1]].map(([a,b])=>`<div class="card stat"><span class="mu">${a}</span><b>${p(b)}</b></div>`).join('')}</div></div>
+<div class="card"><h2>Confusion matrix</h2><div class="cm"><div style="background:var(--neg)">TP<br>${TP}</div><div style="background:var(--unc)">FP<br>${FP}</div><div style="background:var(--unc)">FN<br>${FN}</div><div style="background:var(--neg)">TN<br>${TN}</div></div><p class="note">Rows: actual positive / negative · Columns: predicted positive / negative. For triage, recall matters most – a missed finding (FN) is the costly error.</p></div>`};
+$('#vd').innerHTML='<div class="card"><p class="mu">No validation file loaded yet.</p></div>';
+
+// ---- server-side history + validation ----
+Promise.all([fetch(API+'/stats').then(r=>r.json()),fetch(API+'/history?limit=8').then(r=>r.json())]).then(([a,h])=>{Object.assign(st,a);st.log=h.map(r=>({n:r.case_id||r.id,f:r.finding,c:r.status=='poor'?'–':Math.round(r.conf*100)+'%',t:r.triage.split(' –')[0]}));counters()}).catch(()=>{});
+async function loadValidation(){
+let v;try{const r=await fetch(API+'/validation');if(!r.ok)throw 0;v=await r.json()}catch(e){$('#sv').innerHTML='<div class="card"><p class="mu">No server-side validation yet. Run <code>python evaluate.py DATA_DIR --fit-temp --stress</code> (DATA_DIR/pos, DATA_DIR/neg) and reload.</p></div>';return}
+const f=x=>(x*100).toFixed(1)+'%',c=v.confusion,pl=a=>a.map(q=>(40+q[0]*220)+','+(260-q[1]*220)).join(' '),rel=v.reliability.map(q=>[q[0],q[1]]);
+const grid=(l,x)=>`<svg viewBox="0 0 300 290"><rect x="40" y="40" width="220" height="220" fill="none" stroke="var(--bd)"/><line x1="40" y1="260" x2="260" y2="40" stroke="var(--bd)" stroke-dasharray="4"/><polyline points="${pl(x)}" fill="none" stroke="var(--ac2)" stroke-width="3.5"/><text x="150" y="282" fill="var(--mu)" font-size="11" text-anchor="middle">${l}</text></svg>`;
+const sel=v.selective,stress=v.stress_gate_catch_rate;
+$('#sv').innerHTML=`<div class="card"><h2>Held-out validation <span class="note">${esc(v.split)} · n=${v.n} (${v.n_pos} pos / ${v.n_neg} neg) · ${esc(v.generated)}</span></h2><div class="grid">${[['Accuracy',f(v.accuracy)],['Precision',f(v.precision)],['Recall',f(v.recall)],['Specificity',f(v.specificity)],['F1',f(v.f1)],['AUC',v.auc.toFixed(3)],['ECE (calibrated)',v.ece.toFixed(3)],['ECE (T=1)',v.ece_uncalibrated.toFixed(3)]].map(([a,b])=>`<div class="card stat"><span class="mu">${a}</span><b>${b}</b></div>`).join('')}</div></div>
+<div class="grid"><div class="card"><h2>ROC curve</h2>${grid('False positive rate → True positive rate',v.roc)}</div>
+<div class="card"><h2>Reliability</h2>${grid('Predicted probability → observed frequency',rel)}<p class="note">On the dashed diagonal = well calibrated. T = ${v.temperature}</p></div>
+<div class="card"><h2>Confusion matrix</h2><div class="cm"><div style="background:var(--neg)">TP<br>${c.tp}</div><div style="background:var(--unc)">FP<br>${c.fp}</div><div style="background:var(--unc)">FN<br>${c.fn}</div><div style="background:var(--neg)">TN<br>${c.tn}</div></div></div>
+<div class="card"><h2>Uncertainty &amp; abstention</h2><p>Escalated as uncertain: <b>${f(sel.abstain_rate)}</b><br>Accuracy on answered cases: <b>${f(sel.accuracy_answered)}</b> (all cases ${f(sel.accuracy_all)})<br>Recall on answered cases: <b>${f(sel.recall_answered)}</b></p>
+${stress?`<h2 style="margin-top:14px">Quality-gate stress test <span class="note">n=${v.stress_n}</span></h2><table>${Object.entries(stress).map(([k,x])=>`<tr><td>${k}</td><td>${f(x)} caught</td></tr>`).join('')}</table>`:''}</div></div>`}
+</script></body></html>
